@@ -25,10 +25,14 @@ SCREENSIZE = (1920, 1000)
 API_HOST = "localhost"
 
 countries = list()
+blocked_areas = list()
 
 pygame.init()
 
 basicfont = pygame.font.Font("data/DejaVuSans.ttf", 14)
+largefont = pygame.font.Font("data/DejaVuSans.ttf", 34)
+
+spritelist = []
 
 
 def gis_from_pixels(pos):
@@ -55,8 +59,8 @@ def render_map():
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     ax.set_extent(EXTENT, crs=ccrs.PlateCarree())
 
-    # ax.add_image(stamen_terrain, 4)
-    ax.stock_img()
+    ax.add_image(stamen_terrain, 4)
+    # ax.stock_img()
     ax.coastlines(resolution="50m")
     ax.add_feature(cfeature.BORDERS)
     ax.add_feature(cfeature.OCEAN)
@@ -73,12 +77,16 @@ def render_map():
     for country in country_list:
         if country.attributes["CONTINENT"] == "Europe":
             countries.append(country)
-            # ax.add_geometries(
-            # country.geometry,
-            # ccrs.PlateCarree(),
-            # facecolor=(0, 0, (1 / color)),
-            # label=country.attributes["ADM0 A3"],
-            # )
+
+    shpfilename = shpreader.natural_earth(
+        resolution="10m", category="physical", name="lakes"
+    )
+    reader = shpreader.Reader(shpfilename)
+    for lake in reader.records():
+        blocked_areas.append(lake.geometry)
+        ax.add_geometries(lake.geometry, ccrs.PlateCarree())
+
+    print(len(blocked_areas))
 
     plt.draw()
     return fig.canvas.tostring_rgb()
@@ -99,13 +107,32 @@ def load_image(name, colorkey=None):
     return image, image.get_rect()
 
 
+class TPLabel(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = basicfont.render("Test", True, (0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.held = False
+        self.quality = [0, 0, 0, 0]
+
+
 class Teleport(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image("teleport.png", -1)
+        self.orgimg = self.image.copy()
         self.image.convert_alpha()
         self.held = False
         self.session = requests.Session()
+        self.label = TPLabel()
+        self.quality = [0, 0, 0, 0]
+
+    def is_blocked(self, pos):
+        punkt = Point(pos)
+        for area in blocked_areas:
+            if area.contains(punkt):
+                return True
+        return False
 
     def update(self):
         if self.held:
@@ -113,12 +140,22 @@ class Teleport(pygame.sprite.Sprite):
             self.rect.midbottom = pos
             self.country = country_from_pixels(pos)
             lat, lon = gis_from_pixels(pos)
-            if self.country:
+            if self.country and not self.is_blocked((lat, lon)):
                 self.compute()
-                caption = "{} / {:3.2f}:{:3.2f} / {}".format(
+                caption = "Country: {} lat {:3.2f} lon {:3.2f} {}".format(
                     self.country.attributes["NAME"], lat, lon, self.quality
                 )
                 pygame.display.set_caption(caption)
+                self.label.rect.midbottom = self.rect.midtop
+                self.label.image = basicfont.render(
+                    caption, True, (0, 0, 0), ([x * 255 for x in self.quality[:3]])
+                )
+                self.image = self.orgimg.copy()
+            else:
+                self.label.image = pygame.Surface((1, 1))
+                self.quality = [0, 0, 0, 0]
+                pygame.draw.line(self.image, (255, 0, 0), (0, 0), (29, 29), 2)
+                pygame.draw.line(self.image, (255, 0, 0), (0, 29), (29, 0), 2)
 
     def compute(self):
         lon, lat = gis_from_pixels(self.rect.midbottom)
@@ -142,8 +179,10 @@ def mouseclick(teleports):
     pos = pygame.mouse.get_pos()
     for teleport in teleports:
         if teleport.held:
-            teleport.held = False
-            pygame.mouse.set_visible(True)
+            teleport.update()
+            if teleport.country:
+                teleport.held = False
+                pygame.mouse.set_visible(True)
         if teleport.rect.collidepoint(pos):
             teleport.held = True
             pygame.mouse.set_visible(False)
@@ -159,12 +198,6 @@ def main():
 
     clock = pygame.time.Clock()
 
-    teleport = Teleport()
-    teleport.rect.topleft = (100, 100)
-    teleport2 = Teleport()
-    teleport2.rect.topleft = (200, 200)
-
-    spritelist = []
     allsprites = pygame.sprite.RenderPlain(spritelist)
 
     while True:
@@ -179,6 +212,7 @@ def main():
                 tp = Teleport()
                 tp.rect.midbottom = pygame.mouse.get_pos()
                 spritelist.append(tp)
+                spritelist.append(tp.label)
                 allsprites = pygame.sprite.RenderPlain(spritelist)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -186,6 +220,10 @@ def main():
         screen.blit(bg, (0, 0))
         allsprites.update()
         allsprites.draw(screen)
+        total_quality = sum([x.quality[3] for x in spritelist])
+        tq_str = "{:3.2f}".format(total_quality)
+        qual_label = largefont.render(tq_str, False, (0, 0, 0), (0, 255, 0))
+        screen.blit(qual_label, (20, 900))
         pygame.display.update()
 
 
