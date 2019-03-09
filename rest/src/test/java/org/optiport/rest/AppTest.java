@@ -41,9 +41,9 @@ public class AppTest
     	for (int b =0; b< Constants.bands.length;b++) {
 	    	in.setReceiveBand(Constants.bands[b]);
 	    	in.setTransmitBand(Constants.C_BAND);
-	    	for (int s = 0;s< Constants.satellites.length;s++) {
+	    	for (int s = 0;s< 1;s++) {
 		    	in.setSatellite(Constants.satellites[s]);
-		    	for (int c=0; c<Constants.countries.length;c++) {
+		    	for (int c=0; c<1;c++) {
 			    	in.setTeleportCountry(Constants.countries[c]);
 			    	for (int i= 30;i<=68;i=i+5) 
 						for (int k= -25;k<=47;k=k+5) {
