@@ -2,6 +2,11 @@ package data;
 
 import java.util.Set;
 
+/**
+ * Data Container
+ * @author sneuroh
+ *
+ */
 public class SatelliteSpectrumConstraint {
 	public String getSatellite() {
 		return satellite;

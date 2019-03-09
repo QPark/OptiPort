@@ -98,11 +98,11 @@ public class TransmissionRights {
 	}
 	
 	/**¨
-	 * 
+	 * Check, if the Satellite has Transmission rights in the country for a certain Band
 	 * @param satellite
 	 * @param band
 	 * @param country
-	 * @return 1, if satellite has transmissionRights in the country for the band
+	 * @return 1.0, if satellite has transmissionRights in the country for the Band, -1.0 else
 	 */
 	public Double hasTransmissionRights(String satellite, String band, String country) {
 		
@@ -127,7 +127,7 @@ public class TransmissionRights {
 
 	
 	/**
-	 * 
+	 * Test
 	 * @param args
 	 */
 	public static void main(String[] args) {

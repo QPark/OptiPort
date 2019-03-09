@@ -3,6 +3,11 @@ package data;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Data Container
+ * @author sneuroh
+ *
+ */
 public class SatelliteBeamCountries {
 	
 	public Set<String> getInBeamCountries() {

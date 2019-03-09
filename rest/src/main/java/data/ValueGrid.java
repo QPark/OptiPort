@@ -15,6 +15,8 @@ public class ValueGrid {
 	public static final int COST_OF_LIVING_GRID = 2;
 	public static final int QUALITY_OF_CONNECTIVITY_GRID = 3;
 	public static final int KA_BAND_GRID = 4;
+	public static final int KU_BAND_GRID = 5;
+	public static final int C_BAND_GRID = 6;
 	
 	Logger logger = LoggerFactory.getLogger(ValueGrid.class);
 	
@@ -48,12 +50,54 @@ public class ValueGrid {
 			case KA_BAND_GRID: 
 				initKaBandGrid();
 				break;
+			case KU_BAND_GRID: 
+				initKuBandGrid();
+				break;
+			case C_BAND_GRID: 
+				initCBandGrid();
+				break;
 			case BASE_GRID: 
 				initBaseGrid();
 				break;
 			default: initValueGrid();	
 		}
 	}
+	/**
+	 * C Band Grid, a high value indicates that there are no attenuation problems
+	 * 0.0 < x <=1.0
+	 */
+	private void initCBandGrid() {
+		Double[][] cBandGrid = {
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.8,0.8,0.5,0.5,0.5,0.8,0.9,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.5,0.9,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.4,0.4,0.4,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5}	
+		};
+		valueGrid = cBandGrid;
+	}
+	
+	/**
+	 * Ku Band Grid, a high value indicates that there are no attenuation problems
+	 * 0.0 < x <=1.0
+	 */
+	private void initKuBandGrid() {
+		Double[][] kuBandGrid = {
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.5,0.8,0.8,0.5,0.5,0.5,0.8,0.9,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.5,0.9,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.4,0.4,0.4,0.5,0.5,0.5,0.5,0.5,0.5,0.5},
+				{0.9,0.9,0.8,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5}	
+		};
+		valueGrid = kuBandGrid;
+	}
+	
 	/**
 	 * Ka Band Grid, a high value indicates that there are no attenuation problems
 	 * 0.0 < x <=1.0
