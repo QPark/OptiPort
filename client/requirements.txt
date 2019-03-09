@@ -1,0 +1,6 @@
+Cartopy==0.17.0
+matplotlib==3.0.3
+Pillow==5.4.1
+pygame==1.9.4
+requests==2.21.0
+scipy==1.2.1
