@@ -1,0 +1,1 @@
+C:\bus-dev\bin\apache-maven-3.6.0\bin\mvn install
