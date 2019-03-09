@@ -28,7 +28,7 @@ public class ObjectiveFunction {
 	private static GridAnalysis  cBandAnalysis = new GridAnalysis(ValueGrid.C_BAND_GRID);
 	
 	private int weightCOL = 3;
-	private int weightQOC = 2;
+	private int weightQOC = 8;
 	private int weightATT = 5;
 	
 	/**
